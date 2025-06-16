@@ -6,8 +6,8 @@
 
 {
   imports =
-    [ # Include the results of the hardware scan.
-      ./hardware-configuration.nix
+    [
+      # Include the results of the hardware scan.
       ../hardware/nixos.nix
       ../modules/common.nix
     ];
@@ -87,13 +87,20 @@
     extraGroups = [ "networkmanager" "wheel" ];
     packages = with pkgs; [
       kdePackages.kate
-    #  thunderbird
+      #  thunderbird
     ];
   };
 
+  users.users.lizheart =
+    {
+      isNormalUser = true;
+      description = "lizheart";
+      extraGroups = [ "networkmanager" ];
+      hashedPassword = "$6$mRgYrRekRfq32eIa$9oOKii/05Xq/ozRGR.LFt8IjbJr2c8zf.BOE9lRatrv4RTwzNr2AQftNiK5sMNQ32wbh/Vrzsup1gVIkBe/zc/";
+    };
   # Enable Flakes
   nix.settings.experimental-features = [ "nix-command" "flakes" ];
- 
+
   # Install firefox.
   programs.firefox.enable = true;
 
@@ -103,9 +110,9 @@
   # List packages installed in system profile. To search, run:
   # $ nix search wget
   environment.systemPackages = with pkgs; [
-  #  vim # Do not forget to add an editor to edit configuration.nix! The Nano editor is also installed by default.
-  #  wget
-  git
+    #  vim # Do not forget to add an editor to edit configuration.nix! The Nano editor is also installed by default.
+    #  wget
+    git
   ];
 
   # Some programs need SUID wrappers, can be configured further or are
