@@ -12,7 +12,18 @@
         pkgs = import nixpkgs { inherit system; };
       in {
         devShells.default = pkgs.mkShell {
-          buildInputs = [ pkgs.git ];
+          name = "my-devshell";
+          buildInputs = [
+            pkgs.git
+            pkgs.vim
+            pkgs.curl
+            pkgs.nodejs
+            pkgs.php
+            pkgs.docker
+          ];
+          shellHook = ''
+            echo "👋 Welcome to your dev shell!"
+          '';
         };
       }
     ) // {
