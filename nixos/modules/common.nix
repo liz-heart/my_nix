@@ -10,6 +10,8 @@
     vim
     curl
     wget
+
+    vesktop
     # add more tools here
   ];
 
