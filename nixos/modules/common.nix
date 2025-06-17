@@ -10,7 +10,8 @@
     vim
     curl
     wget
-
+    vscode
+    unzip
     vesktop
     # add more tools here
   ];
