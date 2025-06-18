@@ -6,14 +6,25 @@
 
   # System packages for all hosts
   environment.systemPackages = with pkgs; [
-    git
+    gparted
+
+    # tools
+    unzip
     vim
     curl
     wget
+
+    # dev
     vscode
-    unzip
+    android-studio
+    jetbrains.idea-community-bin
+
+    # git
+    gitFull
+
+    # multimedia
     vesktop
-    # add more tools here
+
   ];
 
   # Set timezone
