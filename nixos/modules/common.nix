@@ -14,6 +14,9 @@
     curl
     wget
 
+    # notes
+    obsidian
+
     # dev
     vscode
     android-studio
@@ -32,4 +35,27 @@
 
   # Example: default editor
   programs.vim.defaultEditor = true;
-}
+
+  # Install firefox
+  programs.firefox = {
+    enable = true;
+
+    policies = {
+      Homepage = {
+        URL = "https://duckduckgo.com";
+        StartPage = "homepage";
+      };
+      SearchEngines = {
+        Default = "DuckDuckGo";
+      };
+      # Add-ons lassen sich hier nur verlinken über Install, oder du kopierst policies.json manuell
+      Extensions = {
+        Install = [
+          "https://addons.mozilla.org/firefox/downloads/latest/ublock-origin/latest.xpi"
+          "https://addons.mozilla.org/firefox/downloads/latest/duckduckgo-privacy-essentials/latest.xpi"
+         ];
+      };
+    };
+
+    };
+    }
