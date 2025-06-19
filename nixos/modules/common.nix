@@ -14,6 +14,10 @@
     curl
     wget
 
+    # bash
+    # SearchEngines
+    ddgr
+
     # notes
     obsidian
 

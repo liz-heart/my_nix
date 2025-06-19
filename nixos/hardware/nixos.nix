@@ -18,6 +18,13 @@
       fsType = "ext4";
     };
 
+  # 1tb data
+  fileSystems."/mnt/data" =
+    { device = "/dev/disk/by-uuid/c4efa5f7-147e-43a6-a691-b9d3b2a3c6a6";
+      fsType = "ext4";
+    };
+
+
   fileSystems."/boot" =
     { device = "/dev/disk/by-uuid/4417-D0F6";
       fsType = "vfat";
