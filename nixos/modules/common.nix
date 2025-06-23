@@ -14,6 +14,10 @@
     curl
     wget
 
+    # textdocuments
+    libreoffice
+    onlyoffice-bin
+
     # bash
     # SearchEngines
     ddgr
