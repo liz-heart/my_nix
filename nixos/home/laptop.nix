@@ -2,6 +2,8 @@
 { pkgs, ... }:
 
 {
+  home.username = "dominik";
+  home.homeDirectory = "/home/dominik";
   home.stateVersion = "25.05";
 
   programs.zsh.enable = true;

@@ -1,11 +1,11 @@
 { config, pkgs, ... }:
-
+# Systemnutzer
 {
+
   users.users.dominik = {
     isNormalUser = true;
     description = "dominik";
     extraGroups = [ "networkmanager" "wheel" ];
-    # Home-Manager wird Flake-basiert geladen
   };
 
   users.users.lizheart = {
