@@ -7,6 +7,8 @@
     ../modules/common/nix.nix        # Nix & Flakes
     ../modules/common/users.nix      # Benutzer: dominik, lizheart
     ../modules/desktop/plasma.nix    # Desktop-Umgebung: KDE Plasma
+
+    ../modules/desktop/hyperland-extras.nix # hyperland demo
   ];
 
   # Bootloader
