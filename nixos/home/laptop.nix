@@ -1,7 +1,8 @@
-# nixos/home/laptops.nix
 { pkgs, ... }:
 
-{
+let
+  startupScript = pkgs.writeShellScriptBin "start" (builtins.readFile ./startup/start.sh);
+in {
   home.username = "dominik";
   home.homeDirectory = "/home/dominik";
   home.stateVersion = "25.05";
@@ -12,13 +13,17 @@
     zsh
     neofetch
     btop
+    swww
+    wl-clipboard
+    networkmanagerapplet
+    clipman
+    waybar
   ];
 
   wayland.windowManager.hyprland = {
     enable = true;
-
     settings.exec-once = [
-      "${pkgs.writeShellScriptBin "start" ''${pkgs.waybar}/bin/waybar & ${pkgs.hyprpaper}/bin/hyprpaper &''}/bin/start"
+      "${startupScript}/bin/start"
     ];
   };
 }
