@@ -27,7 +27,7 @@
     alsa.enable = true;
     alsa.support32Bit = true;
     pulse.enable = true;
-    # Optional: JACK
+    # Optional: JACK<<
     # jack.enable = true;
   };
 

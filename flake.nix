@@ -9,32 +9,68 @@
   };
 
   outputs = { self, nixpkgs, flake-utils, home-manager, ... }:
-    flake-utils.lib.eachDefaultSystem (system:
-      let
-        pkgs = import nixpkgs {
-          inherit system;
-          config.allowUnfree = true;
-        };
-      in
-      {
-        devShells.default = pkgs.mkShell {
-          name = "my-devshell";
-          buildInputs = [
-            pkgs.git
-            pkgs.vim
-            pkgs.curl
-            pkgs.nodejs
-            pkgs.php
-            pkgs.docker
-          ];
-          shellHook = ''
-            echo "👋 Welcome to your dev shell!"
-          '';
-        };
+    flake-utils.lib.eachDefaultSystem
+      (system:
+        let
+          pkgs = import nixpkgs {
+            inherit system;
+            config.allowUnfree = true;
+          };
 
-        formatter = pkgs.nixpkgs-fmt;
-      }
-    ) // {
+          pythonEnv = pkgs.python3.withPackages (ps: with ps; [
+            pip
+            requests
+          ]);
+        in
+        {
+          devShells = {
+            default = pkgs.mkShell {
+              name = "my-devshell";
+              buildInputs = [
+                pkgs.php83
+                pkgs.php83Packages.composer
+                pkgs.nodejs_18
+                pkgs.sqlite
+                pkgs.docker
+                pythonEnv
+              ];
+              shellHook = ''
+                echo "PHP/Laravel, Python development shell ready"
+              '';
+            };
+
+            angular = pkgs.mkShell {
+              name = "angular-shell";
+              buildInputs = [
+                pkgs.nodejs
+                pkgs.yarn
+                pkgs.git
+              ];
+              shellHook = ''
+                echo "Angular development shell ready"
+                echo "Use 'npx @angular/cli new my-app' to create a new project"
+              '';
+            };
+
+            java = pkgs.mkShell {
+              name = "java-shell";
+              buildInputs = [
+                pkgs.jdk24
+                pkgs.maven # Optional: Java-Build-Tool
+                pkgs.gradle # Optional: falls du Gradle brauchst
+              ];
+              shellHook = ''
+                echo "Java development shell ready"
+                echo "Java: ${pkgs.jdk24}/bin/java"
+              '';
+              # Set JAVA_HOME for IDEs and build tools
+              JAVA_HOME = "${pkgs.jdk24}";
+            };
+          };
+
+          formatter = pkgs.nixpkgs-fmt;
+        }
+      ) // {
       nixosConfigurations = {
         laptop = nixpkgs.lib.nixosSystem {
           system = "x86_64-linux";
