@@ -1,10 +1,10 @@
 { config, pkgs, ... }:
 
 {
-  # Enable Flakes and nix-command for everyone
+  # Flakes & nix-command aktivieren
   nix.settings.experimental-features = [ "nix-command" "flakes" ];
 
-  # System packages for all hosts
+  # Standardpakete für alle Hosts
   environment.systemPackages = with pkgs; [
     gparted
 
@@ -14,15 +14,14 @@
     curl
     wget
 
-    # textdocuments
+    # text
     libreoffice
     onlyoffice-bin
 
-    # bash
-    # SearchEngines
+    # bash & suchmaschinen
     ddgr
 
-    # notes
+    # notizen
     obsidian
 
     # dev
@@ -35,16 +34,15 @@
 
     # multimedia
     vesktop
-
   ];
 
-  # Set timezone
+  # Zeitzone
   time.timeZone = "Europe/Vienna";
 
-  # Example: default editor
+  # vim als Default-Editor
   programs.vim.defaultEditor = true;
 
-  # Install firefox
+  # Firefox inkl. Einstellungen und Erweiterungen
   programs.firefox = {
     enable = true;
 
@@ -56,14 +54,12 @@
       SearchEngines = {
         Default = "DuckDuckGo";
       };
-      # Add-ons lassen sich hier nur verlinken über Install, oder du kopierst policies.json manuell
       Extensions = {
         Install = [
           "https://addons.mozilla.org/firefox/downloads/latest/ublock-origin/latest.xpi"
           "https://addons.mozilla.org/firefox/downloads/latest/duckduckgo-privacy-essentials/latest.xpi"
-         ];
+        ];
       };
     };
-
-    };
-    }
+  };
+}
