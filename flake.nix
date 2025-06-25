@@ -6,9 +6,12 @@
     flake-utils.url = "github:numtide/flake-utils";
     home-manager.url = "github:nix-community/home-manager";
     home-manager.inputs.nixpkgs.follows = "nixpkgs";
+
+    # ✅ Hyprland hinzufügen
+    hyprland.url = "git+https://github.com/hyprwm/Hyprland?submodules=1";
   };
 
-  outputs = { self, nixpkgs, flake-utils, home-manager, ... }:
+  outputs = { self, nixpkgs, flake-utils, home-manager, hyprland, ... }:
     flake-utils.lib.eachDefaultSystem (system:
       let
         pkgs = import nixpkgs {
@@ -70,6 +73,7 @@
         formatter = pkgs.nixpkgs-fmt;
       }
     ) // {
+
       nixosConfigurations = {
         laptop = nixpkgs.lib.nixosSystem {
           system = "x86_64-linux";
@@ -82,7 +86,14 @@
               home-manager.users.dominik = import ./nixos/home/laptop.nix;
             }
           ];
+
+          # ✅ Inputs an Module übergeben
+          specialArgs = {
+            inputs = {
+              hyprland = hyprland;
+            };
+          };
         };
       };
     };
-    }
+}

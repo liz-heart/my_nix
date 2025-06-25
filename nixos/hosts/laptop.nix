@@ -1,3 +1,4 @@
+# nixos/hosts/laptops.nix
 { config, pkgs, ... }:
 # host-spezifische Systemkonfiguration -
 # Kernel, Bootloader, Netzwerk, Zeit, DE, Nutzergruppen, Hardware

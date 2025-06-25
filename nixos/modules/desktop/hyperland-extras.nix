@@ -1,3 +1,4 @@
+# nixos/modules/desktop/hyprland-extras.nix
 { pkgs, inputs, ... }:
 
 {

@@ -1,3 +1,4 @@
+# nixos/home/laptops.nix
 { pkgs, ... }:
 
 {

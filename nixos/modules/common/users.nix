@@ -1,3 +1,4 @@
+# nixos/modules/common/users.nix
 { config, pkgs, ... }:
 # Systemnutzer
 {

@@ -1,3 +1,4 @@
+# nixos/modules/common/nix.nix
 { config, pkgs, ... }:
 
 {
