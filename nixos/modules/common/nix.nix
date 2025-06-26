@@ -35,7 +35,14 @@
 
     # multimedia
     vesktop
+
+    # monitor
+    kdePackages.kscreen
+    kdePackages.plasma-systemmonitor
   ];
+
+  services.xserver.videoDrivers = [ "amdgpu" "intel" ];
+
 
   # Zeitzone
   time.timeZone = "Europe/Vienna";

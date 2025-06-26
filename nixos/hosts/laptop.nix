@@ -1,27 +1,29 @@
 # nixos/hosts/laptops.nix
-{ config, pkgs, ... }:
-# host-spezifische Systemkonfiguration -
-# Kernel, Bootloader, Netzwerk, Zeit, DE, Nutzergruppen, Hardware
+{ config, pkgs, lib, ... }:
+
+let
+  my = {
+    desktopEnvironment = "hyprland"; # oder: "plasma"
+  };
+in
 {
-  imports = [
-    ../hardware/laptop.nix           # Hardware-Config von nixos-generate-config
-    ../modules/common/nix.nix        # Nix & Flakes
-    ../modules/common/users.nix      # Benutzer: dominik, lizheart
-    ../modules/desktop/plasma.nix    # Desktop-Umgebung: KDE Plasma
+  imports =
+    [
+      ../hardware/laptop.nix
+      ../modules/common/nix.nix
+      ../modules/common/users.nix
+      ../modules/common/network.nix
+    ]
+    ++ lib.optionals (my.desktopEnvironment == "plasma") [
+      ../modules/desktop/plasma.nix
+    ]
+    ++ lib.optionals (my.desktopEnvironment == "hyprland") [
+      ../modules/desktop/hyprland.nix
+      ../modules/desktop/hyprland-extras.nix
+    ];
 
-    ../modules/desktop/hyperland-extras.nix # hyperland demo
-  ];
-
-  # Bootloader
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
-
-  boot.loader.systemd-boot.extraEntries = {
-    "windows.conf" = ''
-      title Windows
-      efi /EFI/Microsoft/Boot/bootmgfw.efi
-    '';
-  };
 
   networking.hostName = "nixos";
   networking.networkmanager.enable = true;
@@ -41,10 +43,8 @@
     LC_TIME = "de_AT.UTF-8";
   };
 
-  # Nix Flakes & unfreie Software aktivieren
   nix.settings.experimental-features = [ "nix-command" "flakes" ];
   nixpkgs.config.allowUnfree = true;
 
-  # Systemversion für persistente Daten
   system.stateVersion = "25.05";
 }
