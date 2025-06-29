@@ -71,31 +71,30 @@
         };
 
         formatter = pkgs.nixpkgs-fmt;
-      }
-    ) // {
 
-      nixosConfigurations = {
-        laptop = nixpkgs.lib.nixosSystem {
-          system = "x86_64-linux";
-          modules = [
-            ./nixos/hosts/laptop.nix
-            home-manager.nixosModules.home-manager
-            {
-              home-manager.useGlobalPkgs = true;
-              home-manager.useUserPackages = true;
-              home-manager.users.dominik = import ./nixos/home/laptop.nix;
+        nixosConfigurations = {
+          laptop = nixpkgs.lib.nixosSystem {
+            system = "x86_64-linux";
+            modules = [
+              ./nixos/hosts/laptop.nix
+              home-manager.nixosModules.home-manager
+              {
+                home-manager.useGlobalPkgs = true;
+                home-manager.useUserPackages = true;
+                home-manager.users.dominik = import ./nixos/home/laptop.nix;
 
-               home-manager.backupFileExtension = "backup";
-            }
-          ];
+                home-manager.backupFileExtension = "backup";
+              }
+            ];
 
-          # ✅ Inputs an Module übergeben
-          specialArgs = {
-            inputs = {
-              hyprland = hyprland;
+            # ✅ Inputs an Module übergeben
+            specialArgs = {
+              inputs = {
+                hyprland = hyprland;
+              };
             };
           };
         };
-      };
-    };
+      }
+    );
 }

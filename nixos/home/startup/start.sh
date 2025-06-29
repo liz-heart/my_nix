@@ -1,18 +1,13 @@
-#!/bin/sh
+#!/usr/bin/env bash
 
-# Statusleiste
-waybar &
-
-# Hintergrundbild setzen (swww)
+# Wallpaper-Dienst (nur einmalig initialisieren)
 swww init &
-sleep 1
-swww img ~/wallpapers/w1.png &
 
-# Netzwerk-GUI (damit WLAN geht)
+# WLAN-Applet (GUI)
 nm-applet &
 
-# Clipboard-Manager (optional)
+# Clipboard-Manager
 wl-paste --watch clipman store &
 
-# Audiosteuerung (optional, z.B. Lautstärke-Icon)
-# pavucontrol &
+# Notification-Dienst
+dunst &
