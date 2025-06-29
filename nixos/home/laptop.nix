@@ -44,4 +44,10 @@ in {
         "SUPER, D, exec, ${pkgs.wofi}/bin/wofi --show drun"
         "SUPER SHIFT, Q, killactive"
         "SUPER, F, togglefloating"
-        "SUPER, Spa
+        "SUPER, Space, togglefullscreen"
+        "SUPER, 2, exec, ${pkgs.firefox}/bin/firefox"
+        "SUPER, 1, exec, ${pkgs.dolphin}/bin/dolphin"
+      ];
+    };
+  };
+}
