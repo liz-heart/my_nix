@@ -21,7 +21,7 @@ in {
     networkmanagerapplet
     clipman
     waybar
-    dolphin               # ✅ Dateimanager wie unter Plasma
+    pkgs.kdePackages.dolphin               # ✅ Dateimanager wie unter Plasma
     polkit_gnome          # ✅ für Admin-Rechte in dolphin
   ];
 
@@ -46,7 +46,7 @@ in {
         "SUPER, F, togglefloating"
         "SUPER, Space, togglefullscreen"
         "SUPER, 2, exec, ${pkgs.firefox}/bin/firefox"
-        "SUPER, 1, exec, ${pkgs.dolphin}/bin/dolphin"
+        "SUPER, 1, exec, ${pkgs.kdePackages.dolphin}/bin/dolphin"
       ];
     };
   };

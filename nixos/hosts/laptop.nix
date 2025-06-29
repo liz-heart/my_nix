@@ -3,7 +3,7 @@
 
 let
   my = {
-    desktopEnvironment = "plasma"; # oder: "plasma"
+    desktopEnvironment = "hyprland"; # oder: "plasma"
   };
 in
 {
