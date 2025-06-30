@@ -9,7 +9,6 @@ in {
 
   programs.zsh.enable = true;
 
-  # bindet das Start-Skript als Autostart ein
   home.file.".config/hypr/start.sh".source = ./startup/start.sh;
 
   home.packages = with pkgs; [
@@ -21,17 +20,22 @@ in {
     networkmanagerapplet
     clipman
     waybar
-    pkgs.kdePackages.dolphin               # ✅ Dateimanager wie unter Plasma
-    polkit_gnome          # ✅ für Admin-Rechte in dolphin
+    kdePackages.spectacle
+    kdePackages.okular
+    kdePackages.kate
+    kdePackages.dolphin
+    polkit_gnome
+    swaylock-effects
   ];
 
   wayland.windowManager.hyprland = {
     enable = true;
     settings = {
       exec-once = [
-        "~/.config/hypr/start.sh"
+        "${pkgs.waybar}/bin/waybar &"
         "${pkgs.hyprpaper}/bin/hyprpaper &"
         "${pkgs.hyprpaper}/bin/hyprpaper wallpaper eDP-1 /home/dominik/wallpapers/w1.png"
+        "~/.config/hypr/start.sh"
       ];
 
       input = {
@@ -40,13 +44,38 @@ in {
       };
 
       bind = [
+        # Anwendungen
         "SUPER, Return, exec, ${pkgs.kitty}/bin/kitty"
-        "SUPER, D, exec, ${pkgs.wofi}/bin/wofi --show drun"
-        "SUPER SHIFT, Q, killactive"
+        "SUPER, Q, exec, ${pkgs.wofi}/bin/wofi --show drun"
+        "SUPER, R, killactive"
         "SUPER, F, togglefloating"
-        "SUPER, Space, togglefullscreen"
-        "SUPER, 2, exec, ${pkgs.firefox}/bin/firefox"
-        "SUPER, 1, exec, ${pkgs.kdePackages.dolphin}/bin/dolphin"
+        "SUPER, Space, fullscreen"
+        "SUPER, W, exec, ${pkgs.kdePackages.dolphin}/bin/dolphin"
+        "SUPER, 1, workspace, 1"
+        "SUPER, 2, workspace, 2"
+        "SUPER, 3, workspace, 3"
+        "SUPER SHIFT, 1, movetoworkspace, 1"
+        "SUPER SHIFT, 2, movetoworkspace, 2"
+        "SUPER SHIFT, 3, movetoworkspace, 3"
+        "SUPER, L, exec, ${pkgs.swaylock-effects}/bin/swaylock-effects --clock --indicator --grace 3 --effect-blur 7x5"
+        "SUPER SHIFT, S, exec, ${pkgs.kdePackages.spectacle}/bin/spectacle"
+
+        # Fokus verschieben (Vim-Style)
+        "SUPER, H, movefocus, l"
+        "SUPER, L, movefocus, r"
+        "SUPER, K, movefocus, u"
+        "SUPER, J, movefocus, d"
+
+        # Fenster verschieben (Vim-Style)
+        "SUPER SHIFT, H, movewindow, l"
+        "SUPER SHIFT, L, movewindow, r"
+        "SUPER SHIFT, K, movewindow, u"
+        "SUPER SHIFT, J, movewindow, d"
+      ];
+
+      bindm = [
+        "SUPER, mouse:272, movewindow"    # Linksklick
+        "SUPER, mouse:273, resizewindow"  # Rechtsklick
       ];
     };
   };

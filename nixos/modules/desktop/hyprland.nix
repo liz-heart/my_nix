@@ -9,13 +9,13 @@
   programs.hyprland.xwayland.enable = true;
 
   # Display Manager greetd
-  services.greetd = {
-    enable = true;
-    settings.default_session = {
-      command = "${pkgs.hyprland}/bin/Hyprland";
-      user = "dominik";
-    };
-  };
+#  services.greetd = {
+ #   enable = true;
+  #  settings.default_session = {
+   #   command = "${pkgs.hyprland}/bin/Hyprland";
+    #  user = "dominik";
+   # };
+#  };
 
   # Tastatur-Layout
   services.xserver.xkb = {
