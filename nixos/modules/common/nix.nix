@@ -17,7 +17,6 @@
 
     # text
     libreoffice
-    onlyoffice-bin
 
     # bash & suchmaschinen
     ddgr

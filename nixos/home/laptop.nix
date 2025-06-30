@@ -1,7 +1,7 @@
 { pkgs, ... }:
 
 let
-  # Autostart-Skript als ausführbares Binary verfügbar machen
+  # Autostart-Skript als Shell-Binary bereitstellen
   startupScript = pkgs.writeShellScriptBin "start" (builtins.readFile ./startup/start.sh);
 in {
   # Benutzerkonfiguration
@@ -12,99 +12,108 @@ in {
   # Zsh aktivieren
   programs.zsh.enable = true;
 
-  # Autostart-Skript beim Hyprland-Start einbinden
+  # Autostart-Skript für Hyprland
   home.file.".config/hypr/start.sh".source = ./startup/start.sh;
 
-  # Hintergrundbild setzen über Hyprpaper (Home-Manager verwaltet Konfig)
+  # Hyprpaper-Konfiguration für Hintergrundbild (verhindert kurzes Hyprland-Standard-Wallpaper)
   home.file.".config/hypr/hyprpaper.conf".text = ''
     preload = /home/dominik/my_nix/wallpapers/w1.png
     wallpaper = eDP-1,/home/dominik/my_nix/wallpapers/w1.png
+    wallpaper = HDMI-A-1,/home/dominik/my_nix/wallpapers/w1.png
+    splash = false
   '';
 
-  # Installierte Programme
+  # System- und Benutzerprogramme
   home.packages = with pkgs; [
-    # Shell & Tools
-    zsh
-    neofetch
-    btop
-    swww
-    wl-clipboard
-    clipman
-    waybar
-    networkmanagerapplet
-    polkit_gnome
+    # Shell & Systemtools
+    zsh                    # Z-Shell
+    neofetch               # Systemübersicht im Terminal
+    btop                   # Ressourcenmonitor
+    swww                   # (optional) Wallpaper-Tool, derzeit nicht aktiv verwendet
+    wl-clipboard           # Clipboard für Wayland
+    clipman                # Clipboard-Manager
+    waybar                 # Statusleiste oben
+    networkmanagerapplet   # WLAN/Netzwerk-Applet
+    polkit_gnome           # Admin-Rechte (PolicyKit Integration)
 
-    # KDE-Anwendungen
-    kdePackages.dolphin    # Dateimanager
+    # KDE-Anwendungen (nützlich & bewährt)
+    kdePackages.dolphin    # Datei-Manager
     kdePackages.kate       # Texteditor
-    kdePackages.okular     # PDF-Betrachter
-    kdePackages.spectacle  # Screenshots
-    kdePackages.gwenview   # Bilder anzeigen
+    kdePackages.okular     # PDF-Viewer
+    kdePackages.gwenview   # Bildbetrachter
 
-    # Bildschirm sperren (klassisch, stabil)
+    # Bildschirm sperren (einfach & stabil unter Wayland)
     swaylock
   ];
 
-  # Hyprland-Konfiguration
+  # Hyprland-Fenstermanager konfigurieren
   wayland.windowManager.hyprland = {
     enable = true;
 
     settings = {
-      exec-once = [
-        "${pkgs.hyprpaper}/bin/hyprpaper &"
-        "${pkgs.waybar}/bin/waybar &"
-        "~/.config/hypr/start.sh"
+      # Monitor-Layout (Multimonitor-Setup: externer Monitor links von internem)
+      monitor = [
+        "HDMI-A-1,1920x1080@60,-1920x0,1.0"
+        "eDP-1,1920x1080@60,0x0,1.5"
       ];
 
+      # Programme beim Start automatisch ausführen
+      exec-once = [
+        "${pkgs.hyprpaper}/bin/hyprpaper &"            # Hintergrund setzen
+        "sleep 0.5 && ${pkgs.waybar}/bin/waybar &"     # Statusleiste mit kurzem Delay
+        "sleep 0.5 && ~/.config/hypr/start.sh"         # Benutzer-Startskript
+      ];
+
+      # Tastaturlayout für AT (Österreich)
       input = {
         kb_layout = "at";
         kb_variant = "nodeadkeys";
       };
 
+      # Tastenkombinationen (Window- und Workspace-Management)
       bind = [
-        # Programme starten
-        "SUPER, Return, exec, ${pkgs.kitty}/bin/kitty"
-        "SUPER, Q, exec, ${pkgs.wofi}/bin/wofi --show drun"
-        "SUPER, W, exec, ${pkgs.kdePackages.dolphin}/bin/dolphin"
-        "SUPER, Z, exec, ${pkgs.swaylock}/bin/swaylock -f -c 000000"
-        "SUPER SHIFT, S, exec, ${pkgs.kdePackages.spectacle}/bin/spectacle"
+        # ▶ Programme starten
+        "SUPER, Return, exec, ${pkgs.kitty}/bin/kitty"                # Terminal
+        "SUPER, 1, exec, ${pkgs.wofi}/bin/wofi --show drun"           # App-Launcher
+        "SUPER, 2, exec, ${pkgs.kdePackages.dolphin}/bin/dolphin"     # Dateimanager
+        "SUPER, Z, exec, ${pkgs.swaylock}/bin/swaylock -f -c 000000"  # Bildschirm sperren (schwarz)
 
-        # Fenstersteuerung
-        "SUPER, R, killactive"
-        "SUPER, F, togglefloating"
-        "SUPER, Space, fullscreen"
+        # ▶ Fenstersteuerung
+        "SUPER, X, killactive"       # Fenster schließen
+        "SUPER, F, togglefloating"   # Floating-Modus umschalten
+        "SUPER, Space, fullscreen"   # Vollbildmodus
 
-        # Workspaces wechseln
-        "SUPER, 1, workspace, 1"
-        "SUPER, 2, workspace, 2"
-        "SUPER, 3, workspace, 3"
-        "SUPER, 4, workspace, 4"
-        "SUPER, 5, workspace, 5"
+        # ▶ Workspaces (im QWERTY-Block, gut erreichbar)
+        "SUPER, Q, workspace, 1"
+        "SUPER, W, workspace, 2"
+        "SUPER, E, workspace, 3"
+        "SUPER, R, workspace, 4"
+        "SUPER, T, workspace, 5"
 
-        # Fenster in andere Workspaces verschieben
-        "SUPER SHIFT, 1, movetoworkspace, 1"
-        "SUPER SHIFT, 2, movetoworkspace, 2"
-        "SUPER SHIFT, 3, movetoworkspace, 3"
-        "SUPER SHIFT, 4, movetoworkspace, 4"
-        "SUPER SHIFT, 5, movetoworkspace, 5"
+        # ▶ Fenster in andere Workspaces verschieben
+        "SUPER SHIFT, Q, movetoworkspace, 1"
+        "SUPER SHIFT, W, movetoworkspace, 2"
+        "SUPER SHIFT, E, movetoworkspace, 3"
+        "SUPER SHIFT, R, movetoworkspace, 4"
+        "SUPER SHIFT, T, movetoworkspace, 5"
 
-        # Fokus verschieben (Vim-Stil)
+        # ▶ Fensterfokus (Vim-Stil)
         "SUPER, H, movefocus, l"
         "SUPER, L, movefocus, r"
         "SUPER, K, movefocus, u"
         "SUPER, J, movefocus, d"
 
-        # Fenster verschieben
+        # ▶ Fenster verschieben (Vim-Stil)
         "SUPER SHIFT, H, movewindow, l"
         "SUPER SHIFT, L, movewindow, r"
         "SUPER SHIFT, K, movewindow, u"
         "SUPER SHIFT, J, movewindow, d"
       ];
 
-      # Fenster bewegen / skalieren mit Maus
+      # Fenster mit der Maus verschieben und skalieren
       bindm = [
-        "SUPER, mouse:272, movewindow"
-        "SUPER, mouse:273, resizewindow"
+        "SUPER, mouse:272, movewindow"   # Linksklick + SUPER
+        "SUPER, mouse:273, resizewindow" # Rechtsklick + SUPER
       ];
     };
   };

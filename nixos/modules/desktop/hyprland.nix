@@ -8,7 +8,7 @@
   programs.hyprland.enable = true;
   programs.hyprland.xwayland.enable = true;
 
-  # Display Manager greetd
+  # Display Manager greet
 #  services.greetd = {
  #   enable = true;
   #  settings.default_session = {

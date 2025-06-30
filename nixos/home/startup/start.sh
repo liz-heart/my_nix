@@ -1,8 +1,5 @@
 #!/usr/bin/env bash
 
-# Wallpaper-Dienst (nur einmalig initialisieren)
-swww init &
-
 # WLAN-Applet (GUI)
 nm-applet &
 
