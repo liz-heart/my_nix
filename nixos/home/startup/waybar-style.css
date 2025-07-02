@@ -1,0 +1,10 @@
+/* nixos/home/startup/waybar-style.css */
+#workspaces button {
+padding: 0 5px;
+color: white;
+}
+
+#workspaces button.active {
+background-color: #5e81ac;
+border-radius: 5px;
+}

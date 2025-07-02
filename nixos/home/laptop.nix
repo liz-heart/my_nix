@@ -15,12 +15,21 @@ in {
   # Autostart-Skript für Hyprland
   home.file.".config/hypr/start.sh".source = ./startup/start.sh;
 
+    # Waybar-Konfiguration mit Workspace-Scroll und Icons
+  home.file.".config/waybar/config.jsonc".text = builtins.readFile ./startup/waybar-config.jsonc;
+  home.file.".config/waybar/style.css".text = builtins.readFile ./startup/waybar-style.css;
+
+
+
+
   # Hyprpaper-Konfiguration für Hintergrundbild (verhindert kurzes Hyprland-Standard-Wallpaper)
   home.file.".config/hypr/hyprpaper.conf".text = ''
-    preload = /home/dominik/my_nix/wallpapers/w1.png
-    wallpaper = eDP-1,/home/dominik/my_nix/wallpapers/w1.png
-    wallpaper = HDMI-A-1,/home/dominik/my_nix/wallpapers/w1.png
+    preload = /home/dominik/my_nix/wallpapers/w1.jpg
+    wallpaper = eDP-1,/home/dominik/my_nix/wallpapers/w1.jpg
+    wallpaper = HDMI-A-1,/home/dominik/my_nix/wallpapers/w1.jpg
     splash = false
+    ipc = off
+    scaling = fill
   '';
 
   # System- und Benutzerprogramme
@@ -54,7 +63,7 @@ in {
       # Monitor-Layout (Multimonitor-Setup: externer Monitor links von internem)
       monitor = [
         "HDMI-A-1,1920x1080@60,-1920x0,1.0"
-        "eDP-1,1920x1080@60,0x0,1.5"
+        "eDP-1,1920x1080@60,0x0,1.0"
       ];
 
       # Programme beim Start automatisch ausführen
