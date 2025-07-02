@@ -1,9 +1,10 @@
 {
   "layer": "top",
   "position": "top",
+
   "modules-left": ["hyprland/workspaces"],
   "modules-center": [],
-  "modules-right": ["clock"],
+  "modules-right": ["pulseaudio", "network", "battery", "clock"],
 
   "hyprland/workspaces": {
     "format": "{icon}",
@@ -11,15 +12,39 @@
     "on-scroll-up": "hyprctl dispatch workspace e+1",
     "on-scroll-down": "hyprctl dispatch workspace e-1",
     "format-icons": {
-      "1": "󰎤",
-      "2": "󰎧",
-      "3": "󰎪",
-      "4": "󰎭",
-      "5": "󰎱"
+      "1": "1", "2": "2", "3": "3", "4": "4", "5": "5"
     },
+    "all-outputs": false,
     "persistent-workspaces": {
-      "HDMI-A-1": [1, 2, 3],
-      "eDP-1": [4, 5]
+      "eDP-1": [1,2,3,4,5],
+      "HDMI-A-1": [1,2,3,4,5]
     }
+  },
+
+  "pulseaudio": {
+    "format": "{icon} {volume}%",
+    "format-muted": "🔇",
+    "scroll-step": 5
+  },
+
+  "network": {
+    "format-wifi": "📶 {essid} ({signalStrength}%)",
+    "format-ethernet": "🖧 {ipaddr}",
+    "format-disconnected": "⚠️",
+    "interval": 5
+  },
+
+  "battery": {
+    "format": "{icon} {capacity}%",
+    "format-charging": "⚡ {capacity}%",
+    "format-plugged": "🔌 {capacity}%",
+    "format-alt": "{time} remaining",
+    "interval": 30
+  },
+
+  "clock": {
+    "format": " {:%a %d.%m.}  {:%H:%M}",
+    "tooltip-format": "{:%A, %d. %B %Y}\n {:%H:%M:%S}",
+    "interval": 60
   }
 }

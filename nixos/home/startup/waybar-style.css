@@ -1,10 +1,71 @@
-/* nixos/home/startup/waybar-style.css */
+/*
+* {
+  border: none;
+  border-radius: 0;
+  font-family: "JetBrainsMono Nerd Font", "FiraCode Nerd Font", sans-serif;
+  font-size: 13px;
+  min-height: 0;
+  padding: 0;
+  margin: 0;
+  color: #ffffff;
+  background: #1e1e2e;
+}
+
+window#waybar {
+  background: #1e1e2e;
+}
+
+#workspaces {
+  margin: 0 6px;
+}
+
 #workspaces button {
-padding: 0 5px;
-color: white;
+  padding: 0 6px;
+  margin: 0 2px;
+  background: transparent;
+  color: #ffffff;
 }
 
 #workspaces button.active {
-background-color: #5e81ac;
-border-radius: 5px;
+  background: #5e81ac;
+  color: #ffffff;
+  border-radius: 5px;
+  font-weight: bold;
 }
+
+#workspaces button:hover {
+  background: #4c566a;
+}
+
+#pulseaudio,
+#network,
+#battery,
+#clock {
+  padding: 0 8px;
+  background: #1e1e2e;
+}
+
+#pulseaudio.muted {
+  color: #ff5555;
+}
+
+#network.disconnected {
+  color: #ff5555;
+}
+
+#battery.charging,
+#battery.plugged {
+  color: #a3be8c;
+}
+
+#battery.critical {
+  color: #ff5555;
+}
+
+tooltip {
+  background: #2e3440;
+  color: #eceff4;
+  border-radius: 5px;
+  padding: 5px;
+}
+*/

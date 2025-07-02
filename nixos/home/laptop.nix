@@ -9,18 +9,76 @@ in {
   home.homeDirectory = "/home/dominik";
   home.stateVersion = "25.05";
 
+  home.sessionVariables = {
+    XDG_DATA_DIRS = "${pkgs.lib.makeSearchPath "share" [
+      pkgs.libreoffice
+      pkgs.vscode
+      pkgs.kdePackages.okular
+    ]}:/usr/share";
+  };
+
+  xdg.mime.enable = true;
+  xdg.desktopEntries = {
+    my-app = {
+      name = "My App";
+      exec = "my-app-command";
+      icon = "my-app-icon";
+      comment = "Beschreibung";
+      terminal = false;
+      categories = [ "Utility" ];
+    };
+  };
+  xdg.configFile."mimeapps.list".text = ''
+  [Default Applications]
+  application/pdf=org.kde.okular.desktop;
+  text/plain=org.kde.kate.desktop;
+
+  # LibreOffice Writer
+  application/vnd.oasis.opendocument.text=libreoffice-writer.desktop;
+  application/vnd.openxmlformats-officedocument.wordprocessingml.document=libreoffice-writer.desktop;
+
+  # LibreOffice Calc
+  application/vnd.oasis.opendocument.spreadsheet=libreoffice-calc.desktop;
+  application/vnd.openxmlformats-officedocument.spreadsheetml.sheet=libreoffice-calc.desktop;
+
+  # LibreOffice Impress
+  application/vnd.oasis.opendocument.presentation=libreoffice-impress.desktop;
+  application/vnd.openxmlformats-officedocument.presentationml.presentation=libreoffice-impress.desktop;
+  '';
+
+
   # Zsh aktivieren
   programs.zsh.enable = true;
 
-  # Autostart-Skript für Hyprland
-  home.file.".config/hypr/start.sh".source = ./startup/start.sh;
+  # Autostart-Skript für Hyprland (direkt eingebettet)
+    home.file.".config/hypr/start.sh" = {
+  text = ''
+    #!/usr/bin/env bash
 
-    # Waybar-Konfiguration mit Workspace-Scroll und Icons
-  home.file.".config/waybar/config.jsonc".text = builtins.readFile ./startup/waybar-config.jsonc;
-  home.file.".config/waybar/style.css".text = builtins.readFile ./startup/waybar-style.css;
+    # WLAN-Applet (GUI)
+    nm-applet &
+
+    # Clipboard-Manager
+    wl-paste --watch clipman store &
+
+    # Notification-Dienst (nur wenn nicht aktiv)
+    pgrep -x dunst > /dev/null || dunst &
+
+    # Kurzes Delay für stabile Monitor-Erkennung
+    sleep 0.5
+
+    # XDG_DATA_DIRS für .desktop-Erkennung
+    export XDG_DATA_DIRS="${"$"}{XDG_DATA_DIRS:-${"$"}{HOME}/.nix-profile/share:/etc/profiles/per-user/${"$"}USER/share:/run/current-system/sw/share:/usr/share}"
+  '';
+  executable = true;
+};
 
 
 
+
+  # Waybar-Konfiguration mit Workspace-Scroll und Icons
+  # home.file.".config/waybar/config.jsonc".text = builtins.readFile ./startup/waybar-config.jsonc;
+  # home.file.".config/waybar/style.css".text = builtins.readFile ./startup/waybar-style.css;
 
   # Hyprpaper-Konfiguration für Hintergrundbild (verhindert kurzes Hyprland-Standard-Wallpaper)
   home.file.".config/hypr/hyprpaper.conf".text = ''
@@ -32,24 +90,35 @@ in {
     scaling = fill
   '';
 
+  home.file.".config/hypr/screenshot.sh" = {
+    source = ./scripts/screenshot.sh;
+    executable = true;
+  };
+
+
   # System- und Benutzerprogramme
   home.packages = with pkgs; [
     # Shell & Systemtools
-    zsh                    # Z-Shell
-    neofetch               # Systemübersicht im Terminal
-    btop                   # Ressourcenmonitor
-    swww                   # (optional) Wallpaper-Tool, derzeit nicht aktiv verwendet
-    wl-clipboard           # Clipboard für Wayland
-    clipman                # Clipboard-Manager
-    waybar                 # Statusleiste oben
-    networkmanagerapplet   # WLAN/Netzwerk-Applet
-    polkit_gnome           # Admin-Rechte (PolicyKit Integration)
+    dunst
+    zsh
+    neofetch
+    btop
+    swww
+    wl-clipboard
+    clipman
+    waybar
+    networkmanagerapplet
+    polkit_gnome
 
+    # Screenshot
+    grim
+    slurp
+    wl-clipboard
     # KDE-Anwendungen (nützlich & bewährt)
-    kdePackages.dolphin    # Datei-Manager
-    kdePackages.kate       # Texteditor
-    kdePackages.okular     # PDF-Viewer
-    kdePackages.gwenview   # Bildbetrachter
+    kdePackages.dolphin
+    kdePackages.kate
+    kdePackages.okular
+    kdePackages.gwenview
 
     # Bildschirm sperren (einfach & stabil unter Wayland)
     swaylock
@@ -68,9 +137,9 @@ in {
 
       # Programme beim Start automatisch ausführen
       exec-once = [
-        "${pkgs.hyprpaper}/bin/hyprpaper &"            # Hintergrund setzen
-        "sleep 0.5 && ${pkgs.waybar}/bin/waybar &"     # Statusleiste mit kurzem Delay
-        "sleep 0.5 && ~/.config/hypr/start.sh"         # Benutzer-Startskript
+        "${pkgs.hyprpaper}/bin/hyprpaper &"
+        "sleep 0.5 && ${pkgs.waybar}/bin/waybar &"
+        "sleep 0.5 && ~/.config/hypr/start.sh"
       ];
 
       # Tastaturlayout für AT (Österreich)
@@ -82,29 +151,30 @@ in {
       # Tastenkombinationen (Window- und Workspace-Management)
       bind = [
         # ▶ Programme starten
-        "SUPER, Return, exec, ${pkgs.kitty}/bin/kitty"                # Terminal
-        "SUPER, 1, exec, ${pkgs.wofi}/bin/wofi --show drun"           # App-Launcher
-        "SUPER, 2, exec, ${pkgs.kdePackages.dolphin}/bin/dolphin"     # Dateimanager
-        "SUPER, Z, exec, ${pkgs.swaylock}/bin/swaylock -f -c 000000"  # Bildschirm sperren (schwarz)
+        "SUPER, Return, exec, ${pkgs.kitty}/bin/kitty"
+        "SUPER, Q, exec, ${pkgs.wofi}/bin/wofi --show drun"
+        "SUPER, W, exec, ${pkgs.kdePackages.dolphin}/bin/dolphin"
+        "SUPER, Z, exec, ${pkgs.swaylock}/bin/swaylock -f -c 000000"
+        "SUPER_SHIFT, S, exec, ~/.config/hypr/screenshot.sh"
 
         # ▶ Fenstersteuerung
-        "SUPER, X, killactive"       # Fenster schließen
-        "SUPER, F, togglefloating"   # Floating-Modus umschalten
-        "SUPER, Space, fullscreen"   # Vollbildmodus
+        "SUPER, X, killactive"
+        "SUPER, F, togglefloating"
+        "SUPER, Space, fullscreen"
 
         # ▶ Workspaces (im QWERTY-Block, gut erreichbar)
-        "SUPER, Q, workspace, 1"
-        "SUPER, W, workspace, 2"
-        "SUPER, E, workspace, 3"
-        "SUPER, R, workspace, 4"
-        "SUPER, T, workspace, 5"
+        "SUPER, 1, workspace, 1"
+        "SUPER, 2, workspace, 2"
+        "SUPER, 3, workspace, 3"
+        "SUPER, 4, workspace, 4"
+        "SUPER, 5, workspace, 5"
 
         # ▶ Fenster in andere Workspaces verschieben
-        "SUPER SHIFT, Q, movetoworkspace, 1"
-        "SUPER SHIFT, W, movetoworkspace, 2"
-        "SUPER SHIFT, E, movetoworkspace, 3"
-        "SUPER SHIFT, R, movetoworkspace, 4"
-        "SUPER SHIFT, T, movetoworkspace, 5"
+        "SUPER SHIFT, 1, movetoworkspace, 1"
+        "SUPER SHIFT, 2, movetoworkspace, 2"
+        "SUPER SHIFT, 3, movetoworkspace, 3"
+        "SUPER SHIFT, 4, movetoworkspace, 4"
+        "SUPER SHIFT, 5, movetoworkspace, 5"
 
         # ▶ Fensterfokus (Vim-Stil)
         "SUPER, H, movefocus, l"
@@ -121,8 +191,8 @@ in {
 
       # Fenster mit der Maus verschieben und skalieren
       bindm = [
-        "SUPER, mouse:272, movewindow"   # Linksklick + SUPER
-        "SUPER, mouse:273, resizewindow" # Rechtsklick + SUPER
+        "SUPER, mouse:272, movewindow"
+        "SUPER, mouse:273, resizewindow"
       ];
     };
   };
