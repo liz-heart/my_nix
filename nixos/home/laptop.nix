@@ -1,4 +1,4 @@
-{ pkgs, ... }:
+{ pkgs, config, ... }:
 
 let
   # Autostart-Skript als Shell-Binary bereitstellen
@@ -9,16 +9,7 @@ in {
   home.homeDirectory = "/home/dominik";
   home.stateVersion = "25.05";
 
-  # XDG-Umgebungsvariable für zusätzliche .desktop-Erkennung
-  home.sessionVariables = {
-    XDG_DATA_DIRS = "${pkgs.lib.makeSearchPath "share" [
-      pkgs.libreoffice
-      pkgs.vscode
-      pkgs.kdePackages.okular
-    ]}:/usr/share";
-  };
-
-  # .desktop-Dateien manuell definieren für Anwendungen, die standardmäßig keine installieren
+  # Zusätzliche .desktop-Datei manuell anlegen (optional, falls nicht via xdg.desktopEntries)
   home.file.".local/share/applications/libreoffice-writer.desktop".text = ''
     [Desktop Entry]
     Name=LibreOffice Writer
@@ -29,37 +20,82 @@ in {
     MimeType=application/vnd.oasis.opendocument.text;application/vnd.openxmlformats-officedocument.wordprocessingml.document;
   '';
 
-  home.file.".local/share/applications/libreoffice-calc.desktop".text = ''
-    [Desktop Entry]
-    Name=LibreOffice Calc
-    Exec=${pkgs.libreoffice}/bin/libreoffice --calc %U
-    Icon=libreoffice-calc
-    Type=Application
-    Categories=Office;
-    MimeType=application/vnd.oasis.opendocument.spreadsheet;application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;
-  '';
+  # XDG-Umgebungsvariablen für die .desktop-Datei-Erkennung (inkl. ~/.nix-profile!)
+  home.sessionVariables = {
+  XDG_DATA_DIRS = pkgs.lib.concatStringsSep ":" [
+    "${pkgs.libreoffice}/share"
+    "${pkgs.vscode}/share"
+    "${pkgs.kdePackages.okular}/share"
+    "${config.home.homeDirectory}/.nix-profile/share"
+    "/etc/profiles/per-user/${config.home.username}/share"
+    "/run/current-system/sw/share"
+    "/usr/share"
+  ];
+};
 
-  home.file.".local/share/applications/libreoffice-impress.desktop".text = ''
-    [Desktop Entry]
-    Name=LibreOffice Impress
-    Exec=${pkgs.libreoffice}/bin/libreoffice --impress %U
-    Icon=libreoffice-impress
-    Type=Application
-    Categories=Office;
-    MimeType=application/vnd.oasis.opendocument.presentation;application/vnd.openxmlformats-officedocument.presentationml.presentation;
-  '';
 
-  home.file.".local/share/applications/vscode.desktop".text = ''
-    [Desktop Entry]
-    Name=Visual Studio Code
-    Exec=${pkgs.vscode}/bin/code --no-sandbox --unity-launch %F
-    Icon=code
-    Type=Application
-    Categories=Development;IDE;
-    MimeType=text/plain;text/x-nix;inode/directory;
-  '';
+  # Desktop-Einträge (werden automatisch nach ~/.local/share/applications geschrieben)
+  xdg.desktopEntries = {
+    vscode = {
+      name = "Visual Studio Code";
+      exec = "${pkgs.vscode}/bin/code --no-sandbox --unity-launch %F";
+      icon = "vscode";
+      type = "Application";
+      terminal = false;
+      categories = [ "Development" "IDE" ];
+      mimeType = [ "text/plain" "text/x-nix" "inode/directory" ];
+    };
 
-  # Standardanwendungen für bestimmte MIME-Typen setzen
+    libreoffice-writer = {
+      name = "LibreOffice Writer";
+      exec = "${pkgs.libreoffice}/bin/libreoffice --writer %U";
+      icon = "libreoffice-writer";
+      type = "Application";
+      terminal = false;
+      categories = [ "Office" ];
+      mimeType = [
+        "application/vnd.oasis.opendocument.text"
+        "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+      ];
+    };
+
+    libreoffice-calc = {
+      name = "LibreOffice Calc";
+      exec = "${pkgs.libreoffice}/bin/libreoffice --calc %U";
+      icon = "libreoffice-calc";
+      type = "Application";
+      terminal = false;
+      categories = [ "Office" ];
+      mimeType = [
+        "application/vnd.oasis.opendocument.spreadsheet"
+        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+      ];
+    };
+
+    libreoffice-impress = {
+      name = "LibreOffice Impress";
+      exec = "${pkgs.libreoffice}/bin/libreoffice --impress %U";
+      icon = "libreoffice-impress";
+      type = "Application";
+      terminal = false;
+      categories = [ "Office" ];
+      mimeType = [
+        "application/vnd.oasis.opendocument.presentation"
+        "application/vnd.openxmlformats-officedocument.presentationml.presentation"
+      ];
+    };
+
+    my-app = {
+      name = "My App";
+      exec = "my-app-command";
+      icon = "my-app-icon";
+      comment = "Beschreibung";
+      terminal = false;
+      categories = [ "Utility" ];
+    };
+  };
+
+  # Standardanwendungen für Dateitypen (MIME-Zuweisung)
   xdg.mime.enable = true;
   xdg.configFile."mimeapps.list".text = ''
     [Default Applications]
@@ -74,22 +110,10 @@ in {
     text/x-nix=vscode.desktop;
   '';
 
-  # Beispiel-App-Eintrag (kann entfernt werden)
-  xdg.desktopEntries = {
-    my-app = {
-      name = "My App";
-      exec = "my-app-command";
-      icon = "my-app-icon";
-      comment = "Beschreibung";
-      terminal = false;
-      categories = [ "Utility" ];
-    };
-  };
-
-  # Zsh aktivieren
+  # Shell
   programs.zsh.enable = true;
 
-  # Autostart-Skript für Hyprland (direkt eingebettet)
+  # Autostart-Skript Hyprland
   home.file.".config/hypr/start.sh" = {
     text = ''
       #!/usr/bin/env bash
@@ -102,7 +126,7 @@ in {
     executable = true;
   };
 
-  # Hyprpaper-Konfiguration für Hintergrundbild
+  # Hyprpaper Hintergrundbild
   home.file.".config/hypr/hyprpaper.conf".text = ''
     preload = /home/dominik/my_nix/wallpapers/w1.jpg
     wallpaper = eDP-1,/home/dominik/my_nix/wallpapers/w1.jpg
@@ -112,7 +136,7 @@ in {
     scaling = fill
   '';
 
-  # System- und Benutzerprogramme
+  # Programme (CLI + GUI)
   home.packages = with pkgs; [
     dunst
     zsh
@@ -126,11 +150,15 @@ in {
     polkit_gnome
     grim
     slurp
+    kdePackages.kservice
+    kdePackages.kde-cli-tools
     kdePackages.dolphin
     kdePackages.kate
     kdePackages.okular
     kdePackages.gwenview
     swaylock
+
+    # Screenshot-Script als ausführbares Binary
     (pkgs.writeShellScriptBin "screenshot" ''
       #!/usr/bin/env bash
       FILE="/tmp/screenshot.png"
@@ -139,7 +167,7 @@ in {
     '')
   ];
 
-  # Hyprland-Fenstermanager konfigurieren
+  # Hyprland-Window-Manager
   wayland.windowManager.hyprland = {
     enable = true;
     settings = {
