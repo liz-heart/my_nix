@@ -122,6 +122,13 @@ in {
 
     # Bildschirm sperren (einfach & stabil unter Wayland)
     swaylock
+
+    (pkgs.writeShellScriptBin "screenshot" ''
+    #!/usr/bin/env bash
+    FILE="/tmp/screenshot.png"
+    grim -g "$(slurp)" "$FILE" &&
+      cp "$FILE" ~/Bilder/Bildschirmfotos/screenshot-$(date +%s).png
+  '')
   ];
 
   # Hyprland-Fenstermanager konfigurieren
@@ -155,7 +162,9 @@ in {
         "SUPER, Q, exec, ${pkgs.wofi}/bin/wofi --show drun"
         "SUPER, W, exec, ${pkgs.kdePackages.dolphin}/bin/dolphin"
         "SUPER, Z, exec, ${pkgs.swaylock}/bin/swaylock -f -c 000000"
-        "SUPER_SHIFT, S, exec, ~/.config/hypr/screenshot.sh"
+        "SUPER_SHIFT, S, exec, screenshot"
+        "SUPER_ALT, S, exec, ${pkgs.kdePackages.dolphin}/bin/dolphin /home/dominik/Bilder/Bildschirmfotos"
+
 
         # ▶ Fenstersteuerung
         "SUPER, X, killactive"
