@@ -112,12 +112,6 @@ in {
     scaling = fill
   '';
 
-  # Screenshot-Skript einbinden
-  home.file.".config/hypr/screenshot.sh" = {
-    source = ./scripts/screenshot.sh;
-    executable = true;
-  };
-
   # System- und Benutzerprogramme
   home.packages = with pkgs; [
     dunst
