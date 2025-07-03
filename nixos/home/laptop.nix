@@ -157,6 +157,7 @@ in {
     kdePackages.okular
     kdePackages.gwenview
     swaylock
+    file
 
     # Screenshot-Script als ausführbares Binary
     (pkgs.writeShellScriptBin "screenshot" ''
