@@ -81,7 +81,7 @@
             {
               home-manager.useGlobalPkgs = true;
               home-manager.useUserPackages = true;
-              home-manager.users.dominik = import ./nixos/home/laptop.nix;
+              home-manager.users.dominik = import ./nixos/home/dominik/dominik.nix;
               home-manager.backupFileExtension = "backup";
             }
           ];
