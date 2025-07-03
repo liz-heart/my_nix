@@ -1,5 +1,11 @@
 { pkgs, config, ... }:
 
+{
+  imports = [
+    ./waybar
+    ./startup
+  ];
+
 let
   # Autostart-Skript als Shell-Binary bereitstellen
   startupScript = pkgs.writeShellScriptBin "start" (builtins.readFile ./startup/start.sh);

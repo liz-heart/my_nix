@@ -15,11 +15,11 @@ in
       ../modules/common/network.nix
     ]
     ++ lib.optionals (my.desktopEnvironment == "plasma") [
-      ../modules/desktop/plasma.nix
+      ../modules/desktop/plasma/default.nix
     ]
     ++ lib.optionals (my.desktopEnvironment == "hyprland") [
-      ../modules/desktop/hyprland.nix
-      ../modules/desktop/hyprland-extras.nix
+      ../modules/desktop/hyprland/default.nix
+      ../modules/desktop/hyprland/extras.nix
     ];
 
   boot.loader.systemd-boot.enable = true;
