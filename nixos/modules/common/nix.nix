@@ -7,41 +7,67 @@
 
   # Standardpakete für alle Hosts
   environment.systemPackages = with pkgs; [
+    # System-Tools
     gparted
-
-    # tools
     unzip
     vim
     curl
     wget
+    file
 
-    # text
+    # Textverarbeitung & Notizen
     libreoffice
-
-    # bash & suchmaschinen
-    ddgr
-
-    # notizen
     obsidian
 
-    # dev
+    # Terminal & CLI-Tools
+    zsh
+    dunst
+    neofetch
+    btop
+    ddgr
+    wl-clipboard
+    clipman
+    grim
+    slurp
+
+    # Wayland GUI-Tools
+    swww
+    waybar
+    networkmanagerapplet
+    polkit_gnome
+    swaylock
+
+    # KDE
+    kdePackages.kservice
+    kdePackages.kde-cli-tools
+    kdePackages.dolphin
+    kdePackages.kate
+    kdePackages.okular
+    kdePackages.gwenview
+    kdePackages.kscreen
+    kdePackages.plasma-systemmonitor
+
+    # Entwicklung
     vscode
     android-studio
     jetbrains.idea-community-bin
-
-    # git
     gitFull
 
-    # multimedia
+    # Kommunikation / Multimedia
     vesktop
 
-    # monitor
-    kdePackages.kscreen
-    kdePackages.plasma-systemmonitor
+    desktop-file-utils
+
+    # Screenshot-Skript
+    (pkgs.writeShellScriptBin "screenshot" ''
+      #!/usr/bin/env bash
+      FILE="/tmp/screenshot.png"
+      grim -g "$(slurp)" "$FILE" &&
+        cp "$FILE" ~/Bilder/Bildschirmfotos/screenshot-$(date +%s).png
+    '')
   ];
 
   services.xserver.videoDrivers = [ "amdgpu" "intel" ];
-
 
   # Zeitzone
   time.timeZone = "Europe/Vienna";
@@ -52,7 +78,6 @@
   # Firefox inkl. Einstellungen und Erweiterungen
   programs.firefox = {
     enable = true;
-
     policies = {
       Homepage = {
         URL = "https://duckduckgo.com";
@@ -69,4 +94,9 @@
       };
     };
   };
+
+  # XDG Portal Konfiguration für .desktop-Erkennung
+  xdg.portal.enable = true;
+  xdg.portal.extraPortals = [ pkgs.xdg-desktop-portal-gtk ];
+  xdg.portal.config.common.default = "gtk";
 }

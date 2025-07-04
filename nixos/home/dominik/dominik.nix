@@ -1,46 +1,36 @@
-{ pkgs, config, ... }:
+{ pkgs, config, lib, ... }:
 
-{
+let
+  startupScript = pkgs.writeShellScriptBin "start" (builtins.readFile ./startup/start.sh);
+in {
   imports = [
-    ./waybar
+    #./waybar
     ./startup
   ];
 
-let
-  # Autostart-Skript als Shell-Binary bereitstellen
-  startupScript = pkgs.writeShellScriptBin "start" (builtins.readFile ./startup/start.sh);
-in {
-  # Benutzerkonfiguration
   home.username = "dominik";
   home.homeDirectory = "/home/dominik";
   home.stateVersion = "25.05";
 
-  # Zusätzliche .desktop-Datei manuell anlegen (optional, falls nicht via xdg.desktopEntries)
-  home.file.".local/share/applications/libreoffice-writer.desktop".text = ''
-    [Desktop Entry]
-    Name=LibreOffice Writer
-    Exec=${pkgs.libreoffice}/bin/libreoffice --writer %U
-    Icon=libreoffice-writer
-    Type=Application
-    Categories=Office;
-    MimeType=application/vnd.oasis.opendocument.text;application/vnd.openxmlformats-officedocument.wordprocessingml.document;
+  home.activation.linkDesktopEntries = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+    mkdir -p ${config.home.homeDirectory}/.local/share/applications
+    for f in ${config.home.profileDirectory}/share/applications/*.desktop; do
+      ln -sf "$f" ${config.home.homeDirectory}/.local/share/applications/
+    done
   '';
 
-  # XDG-Umgebungsvariablen für die .desktop-Datei-Erkennung (inkl. ~/.nix-profile!)
+
   home.sessionVariables = {
-  XDG_DATA_DIRS = pkgs.lib.concatStringsSep ":" [
-    "${pkgs.libreoffice}/share"
-    "${pkgs.vscode}/share"
-    "${pkgs.kdePackages.okular}/share"
-    "${config.home.homeDirectory}/.nix-profile/share"
-    "/etc/profiles/per-user/${config.home.username}/share"
-    "/run/current-system/sw/share"
-    "/usr/share"
-  ];
-};
+    XDG_DATA_DIRS = pkgs.lib.concatStringsSep ":" [
+      "${pkgs.vscode}/share"
+      "${pkgs.kdePackages.okular}/share"
+      "${config.home.homeDirectory}/.nix-profile/share"
+      "/etc/profiles/per-user/${config.home.username}/share"
+      "/run/current-system/sw/share"
+      "/usr/share"
+    ];
+  };
 
-
-  # Desktop-Einträge (werden automatisch nach ~/.local/share/applications geschrieben)
   xdg.desktopEntries = {
     vscode = {
       name = "Visual Studio Code";
@@ -52,18 +42,23 @@ in {
       mimeType = [ "text/plain" "text/x-nix" "inode/directory" ];
     };
 
-    libreoffice-writer = {
-      name = "LibreOffice Writer";
-      exec = "${pkgs.libreoffice}/bin/libreoffice --writer %U";
-      icon = "libreoffice-writer";
-      type = "Application";
-      terminal = false;
-      categories = [ "Office" ];
-      mimeType = [
-        "application/vnd.oasis.opendocument.text"
-        "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
-      ];
-    };
+      libreoffice-writer = {
+        name = "LibreOffice Writer";
+        exec = "${pkgs.writeShellScriptBin "libreoffice-writer-wrapper" ''
+          exec ${pkgs.libreoffice}/bin/libreoffice --writer "$@"
+        ''}/bin/libreoffice-writer-wrapper %f";
+        icon = "libreoffice-writer";
+        type = "Application";
+        terminal = false;
+        categories = [ "Office" ];
+        mimeType = [
+          "application/vnd.oasis.opendocument.text"
+          "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+        ];
+      };
+
+
+
 
     libreoffice-calc = {
       name = "LibreOffice Calc";
@@ -90,36 +85,25 @@ in {
         "application/vnd.openxmlformats-officedocument.presentationml.presentation"
       ];
     };
-
-    my-app = {
-      name = "My App";
-      exec = "my-app-command";
-      icon = "my-app-icon";
-      comment = "Beschreibung";
-      terminal = false;
-      categories = [ "Utility" ];
-    };
   };
 
-  # Standardanwendungen für Dateitypen (MIME-Zuweisung)
   xdg.mime.enable = true;
   xdg.configFile."mimeapps.list".text = ''
     [Default Applications]
     application/pdf=org.kde.okular.desktop;
     text/plain=org.kde.kate.desktop;
+    text/x-nix=vscode.desktop;
+
     application/vnd.oasis.opendocument.text=libreoffice-writer.desktop;
     application/vnd.openxmlformats-officedocument.wordprocessingml.document=libreoffice-writer.desktop;
     application/vnd.oasis.opendocument.spreadsheet=libreoffice-calc.desktop;
     application/vnd.openxmlformats-officedocument.spreadsheetml.sheet=libreoffice-calc.desktop;
     application/vnd.oasis.opendocument.presentation=libreoffice-impress.desktop;
     application/vnd.openxmlformats-officedocument.presentationml.presentation=libreoffice-impress.desktop;
-    text/x-nix=vscode.desktop;
   '';
 
-  # Shell
   programs.zsh.enable = true;
 
-  # Autostart-Skript Hyprland
   home.file.".config/hypr/start.sh" = {
     text = ''
       #!/usr/bin/env bash
@@ -132,7 +116,6 @@ in {
     executable = true;
   };
 
-  # Hyprpaper Hintergrundbild
   home.file.".config/hypr/hyprpaper.conf".text = ''
     preload = /home/dominik/my_nix/wallpapers/w1.jpg
     wallpaper = eDP-1,/home/dominik/my_nix/wallpapers/w1.jpg
@@ -142,39 +125,9 @@ in {
     scaling = fill
   '';
 
-  # Programme (CLI + GUI)
   home.packages = with pkgs; [
-    dunst
-    zsh
-    neofetch
-    btop
-    swww
-    wl-clipboard
-    clipman
-    waybar
-    networkmanagerapplet
-    polkit_gnome
-    grim
-    slurp
-    kdePackages.kservice
-    kdePackages.kde-cli-tools
-    kdePackages.dolphin
-    kdePackages.kate
-    kdePackages.okular
-    kdePackages.gwenview
-    swaylock
-    file
-
-    # Screenshot-Script als ausführbares Binary
-    (pkgs.writeShellScriptBin "screenshot" ''
-      #!/usr/bin/env bash
-      FILE="/tmp/screenshot.png"
-      grim -g "$(slurp)" "$FILE" &&
-        cp "$FILE" ~/Bilder/Bildschirmfotos/screenshot-$(date +%s).png
-    '')
   ];
 
-  # Hyprland-Window-Manager
   wayland.windowManager.hyprland = {
     enable = true;
     settings = {
