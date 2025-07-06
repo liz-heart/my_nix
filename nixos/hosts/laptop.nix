@@ -1,11 +1,6 @@
-# nixos/hosts/laptops.nix
-{ config, pkgs, lib, ... }:
+# nixos/hosts/laptop.nix
+{ config, pkgs, lib, desktopEnvironment, ... }:
 
-let
-  my = {
-    desktopEnvironment = "hyprland"; # oder: "plasma"
-  };
-in
 {
   imports =
     [
@@ -14,12 +9,11 @@ in
       ../modules/common/users.nix
       ../modules/common/network.nix
     ]
-    ++ lib.optionals (my.desktopEnvironment == "plasma") [
+    ++ lib.optionals (desktopEnvironment == "plasma") [
       ../modules/desktop/plasma/default.nix
     ]
-    ++ lib.optionals (my.desktopEnvironment == "hyprland") [
+    ++ lib.optionals (desktopEnvironment == "hyprland") [
       ../modules/desktop/hyprland/default.nix
-      ../modules/desktop/hyprland/extras.nix
     ];
 
   boot.loader.systemd-boot.enable = true;
@@ -45,6 +39,7 @@ in
 
   nix.settings.experimental-features = [ "nix-command" "flakes" ];
   nixpkgs.config.allowUnfree = true;
+
   services.upower.enable = true;
 
   system.stateVersion = "25.05";

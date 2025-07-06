@@ -1,97 +1,136 @@
 {
-  description = "My modular NixOS flake";
+  description = "Modular NixOS setup with Home Manager, DevShells and Hyprland";
 
   inputs = {
+    # Main NixOS channel (unstable)
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
+
+    # Optional stable channel (e.g. for production-grade tools)
+    nixpkgs-stable.url = "github:NixOS/nixpkgs/nixos-24.05";
+
+    # flake-utils: multi-system support (e.g., x86_64, aarch64)
     flake-utils.url = "github:numtide/flake-utils";
+
+    # Home Manager for user configuration
     home-manager.url = "github:nix-community/home-manager";
     home-manager.inputs.nixpkgs.follows = "nixpkgs";
 
+    # Hyprland as a flake input (with submodule support)
     hyprland.url = "git+https://github.com/hyprwm/Hyprland?submodules=1";
   };
 
-  outputs = { self, nixpkgs, flake-utils, home-manager, hyprland, ... }:
-    flake-utils.lib.eachDefaultSystem (system:
-      let
-        pkgs = import nixpkgs {
-          inherit system;
-          config.allowUnfree = true;
-        };
+  outputs = { self, nixpkgs, nixpkgs-stable, flake-utils, home-manager, hyprland, ... }:
+    let
+      system = "x86_64-linux";
 
-        pythonEnv = pkgs.python3.withPackages (ps: with ps; [
-          pip
-          requests
-        ]);
-      in
-      {
-        devShells = {
-          default = pkgs.mkShell {
-            name = "my-devshell";
-            buildInputs = [
-              pkgs.php83
-              pkgs.php83Packages.composer
-              pkgs.nodejs_18
-              pkgs.sqlite
-              pkgs.docker
-              pythonEnv
-            ];
-            shellHook = ''
-              echo "PHP/Laravel, Python development shell ready"
-            '';
-          };
+      pkgs = import nixpkgs {
+        inherit system;
+        config.allowUnfree = true;
+      };
 
-          angular = pkgs.mkShell {
-            name = "angular-shell";
-            buildInputs = [
-              pkgs.nodejs
-              pkgs.yarn
-              pkgs.git
-            ];
-            shellHook = ''
-              echo "Angular development shell ready"
-              echo "Use 'npx @angular/cli new my-app' to create a new project"
-            '';
-          };
+      stable = import nixpkgs-stable {
+        inherit system;
+        config.allowUnfree = true;
+      };
+    in flake-utils.lib.eachDefaultSystem (system: {
+      # 💻 DevShells for development environments
 
-          java = pkgs.mkShell {
-            name = "java-shell";
-            buildInputs = [
-              pkgs.jdk21
-              pkgs.maven
-              pkgs.gradle
-            ];
-            shellHook = ''
-              echo "✅ Java development shell ready"
-              echo "🛠  Java: ${pkgs.jdk21}/bin/java"
-              java -version
-            '';
-            JAVA_HOME = "${pkgs.jdk21}";
-          };
-        };
+      devShells.default = pkgs.mkShell {
+        name = "default-devshell";
+        buildInputs = [
+          pkgs.php83
+          pkgs.php83Packages.composer
+          pkgs.nodejs_18
+          pkgs.sqlite
+          pkgs.docker
+          (pkgs.python3.withPackages (ps: with ps; [ pip requests ]))
+        ];
+        shellHook = ''
+          echo "🔧 PHP/Laravel + Python DevShell active"
+        '';
+      };
 
-        formatter = pkgs.nixpkgs-fmt;
-      }
-    ) // {
-      nixosConfigurations = {
-        laptop = nixpkgs.lib.nixosSystem {
-          system = "x86_64-linux";
-          modules = [
-            ./nixos/hosts/laptop.nix
-            home-manager.nixosModules.home-manager
-            {
-              home-manager.useGlobalPkgs = true;
-              home-manager.useUserPackages = true;
-              home-manager.users.dominik = import ./nixos/home/dominik/dominik.nix;
-              home-manager.backupFileExtension = "backup";
-            }
-          ];
+      devShells.angular = pkgs.mkShell {
+        name = "angular-shell";
+        buildInputs = [
+          pkgs.nodejs
+          pkgs.yarn
+          pkgs.git
+        ];
+        shellHook = ''
+          echo "🅰️ Angular DevShell active"
+          echo "💡 npx @angular/cli new my-app"
+        '';
+      };
 
-          specialArgs = {
-            inputs = {
-              hyprland = hyprland;
-            };
-          };
+      devShells.java = pkgs.mkShell {
+        name = "java-shell";
+        buildInputs = [
+          pkgs.jdk21
+          pkgs.maven
+          pkgs.gradle
+        ];
+        shellHook = ''
+          echo "☕ Java DevShell active"
+          java -version
+        '';
+        JAVA_HOME = "${pkgs.jdk21}";
+      };
+
+      # Formatter for Nix code
+      formatter = pkgs.nixpkgs-fmt;
+    }) // {
+      # 🧩 NixOS system configuration
+      nixosConfigurations.laptop = nixpkgs.lib.nixosSystem {
+        system = "x86_64-linux";
+        modules = [
+          ./nixos/hosts/laptop.nix
+          ./nixos/hardware/laptop.nix
+
+          home-manager.nixosModules.home-manager
+
+          {
+            home-manager.useGlobalPkgs = true;
+            home-manager.useUserPackages = true;
+            home-manager.backupFileExtension = "backup";
+
+            # User home-manager configs (in system)
+            home-manager.users.dominik = import ./nixos/home/dominik/dominik.nix;
+          }
+        ];
+        specialArgs = {
+          inherit hyprland;
+          desktopEnvironment = "hyprland";
         };
       };
+
+      # 🏠 Home Manager standalone (for user environments without NixOS)
+      homeConfigurations.dominik = home-manager.lib.homeManagerConfiguration {
+        pkgs = import nixpkgs {
+          system = "x86_64-linux";
+          config.allowUnfree = true;
+        };
+        modules = [
+          ./nixos/home/dominik/dominik.nix
+        ];
+        extraSpecialArgs = {
+          inherit hyprland;
+          desktopEnvironment = "hyprland";
+        };
+      };
+
+#      homeConfigurations.lizheart = home-manager.lib.homeManagerConfiguration {
+ #       pkgs = import nixpkgs {
+  #        system = "x86_64-linux";
+   #       config.allowUnfree = true;
+    #    };
+     #   modules = [
+      #    ./nixos/home/lizheart/lizheart.nix
+       # ];
+        #extraSpecialArgs = {
+         # inherit hyprland;
+          #desktopEnvironment = "plasma";
+        #};
+      #};
     };
 }

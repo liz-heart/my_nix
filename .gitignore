@@ -30,3 +30,4 @@ __pycache__/
 
 # Secret files
 .env
+nixos/secrets/

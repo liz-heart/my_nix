@@ -1,8 +1,8 @@
-{ pkgs, config, ... }:
+{ pkgs, config, lib, ... }:
 
 let
   # Startscript für Hyprland-Session
-  startupScript = pkgs.writeShellScriptBin "start" (builtins.readFile ./startup/start.sh);
+  startupScript = pkgs.writeShellScriptBin "start" (builtins.readFile ./modules/startup/start.sh);
 
   # Wrapper für LibreOffice Writer zur Setzung von KDE-relevanten Umgebungsvariablen
   libreofficeWriterWrapper = pkgs.writeShellScriptBin "libreoffice-writer-wrapper" ''
@@ -11,20 +11,24 @@ let
     export KDE_FULL_SESSION=true
     exec ${pkgs.libreoffice}/bin/libreoffice --writer "$@"
   '';
+
+  wallpaper = "/home/dominik/my_nix/wallpapers/w1.jpg";
+
 in {
   imports = [
-    ./startup
-    ./waybar
-    ./cli/bottom
+    ./modules/startup
+    ./modules/waybar
+    ./modules/cli/bottom
+    #./modules/apps.nix
   ];
 
   home.username = "dominik";
   home.homeDirectory = "/home/dominik";
   home.stateVersion = "25.05";
 
-  # Setzen der XDG_DATA_DIRS für MIME- & Menü-Erkennung
+  # XDG Session-Variablen
   home.sessionVariables = {
-    XDG_DATA_DIRS = pkgs.lib.concatStringsSep ":" [
+    XDG_DATA_DIRS = lib.concatStringsSep ":" [
       "${pkgs.vscode}/share"
       "${pkgs.kdePackages.okular}/share"
       "${config.home.homeDirectory}/.nix-profile/share"
@@ -34,7 +38,7 @@ in {
     ];
   };
 
-  # Eigene .desktop-Dateien
+  # Eigene .desktop-Einträge
   xdg.desktopEntries = {
     vscode = {
       name = "Visual Studio Code";
@@ -102,12 +106,11 @@ in {
     application/vnd.openxmlformats-officedocument.presentationml.presentation=libreoffice-impress.desktop;
   '';
 
-  # Shell
+  # Shell & Tools
   programs.zsh.enable = true;
-  # process/system visualization and management application
   programs.bottom.enable = true;
 
-  # Startskript für Hyprland (Tray, Clipboard, Benachrichtigungen, etc.)
+  # Startskript für Hyprland
   home.file.".config/hypr/start.sh" = {
     text = ''
       #!/usr/bin/env bash
@@ -122,18 +125,15 @@ in {
 
   # Hintergrundbild-Konfiguration für hyprpaper
   home.file.".config/hypr/hyprpaper.conf".text = ''
-    preload = /home/dominik/my_nix/wallpapers/w1.jpg
-    wallpaper = eDP-1,/home/dominik/my_nix/wallpapers/w1.jpg
-    wallpaper = HDMI-A-1,/home/dominik/my_nix/wallpapers/w1.jpg
+    preload = ${wallpaper}
+    wallpaper = eDP-1,${wallpaper}
+    wallpaper = HDMI-A-1,${wallpaper}
     splash = false
     ipc = off
     scaling = fill
   '';
 
-  # Zusätzliche Pakete, aktuell leer
-  home.packages = with pkgs; [ ];
-
-  # Hyprland-Konfiguration
+  # Hyprland-Einstellungen
   wayland.windowManager.hyprland = {
     enable = true;
     settings = {
@@ -183,7 +183,6 @@ in {
 
         "SUPER, TAB, workspace, +1"
         "SUPER_SHIFT, TAB, workspace, -1"
-
 
         "SUPER, H, movefocus, l"
         "SUPER, L, movefocus, r"
