@@ -15,6 +15,7 @@ in {
   imports = [
     ./startup
     ./waybar
+    ./cli/bottom
   ];
 
   home.username = "dominik";
@@ -103,6 +104,8 @@ in {
 
   # Shell
   programs.zsh.enable = true;
+  # process/system visualization and management application
+  programs.bottom.enable = true;
 
   # Startskript für Hyprland (Tray, Clipboard, Benachrichtigungen, etc.)
   home.file.".config/hypr/start.sh" = {

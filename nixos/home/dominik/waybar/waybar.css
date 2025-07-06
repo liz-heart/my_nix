@@ -1,193 +1,144 @@
+#custom-space-left,
+#custom-space-right,
+.spacer {
+  background: transparent;
+  padding: 0 20px;
+}
 
 * {
-  border: none;
-  border-radius: 10px;
-  font-family: "JetBrainsMono Nerd Font", "Font Awesome 6 Free", sans-serif;
-  font-weight: bold;
-  font-size: 12px;
-  min-height: 0;
+border: none;
+border-radius: 0;
+font-family: "JetBrainsMono Nerd Font", "Font Awesome 6 Free", sans-serif;
+font-weight: bold;
+font-size: 12px;
+min-height: 0;
 }
 
 window#waybar {
-  background: rgba(21, 18, 27, 0);
-  color: #cdd6f4;
+  background: #0c0c0e;
+  color: #f4f4f4;
+  padding: 0 10px;
 }
 
 tooltip {
-  background: #000000;
-  border-radius: 7px;
-  border-width: 2.5px;
-  border-style: solid;
-  border-color: #8aadf4;
-  padding-right: 5px;
-  padding-left: 5px;
-  padding-top: 5px;
-  padding-bottom: 5px;
+  background: #1a1a1c;
+  border-radius: 5px;
+  border: 2px solid #f97316;
+  padding: 5px;
+  color: #f4f4f4;
 }
 
-
-
-#workspaces button {
-color: #313244;
-margin-right: 5px;
-padding-right: 0px;
-padding-left: 0px;
-}
-
-#workspaces button.active {
-color: #89b4fa;
-}
-
-#workspaces button.focused {
-color: #a6adc8;
-background: #eba0ac;
-border-radius: 13px;
-}
-
-
-
-#workspaces button.persistent {
-color: #f9e2af;
-}
-
-
-#workspaces button.empty {
-color: #313244;
-}
-
-#workspaces button.active,
-#workspaces button.visible {
-color: #89b4fa;
-box-shadow: inset 0 -1px #1e1e2e;
-}
-
-#workspaces button.urgent {
-color: #f38ba8;
-}
+/* ---------- LINKS ---------- */
 #custom-weather,
-#language,
 #cpu,
-#window,
-#clock,
-#pulseaudio,
-#pulseaudio.microphone,
-#workspaces,
-#tray,
 #memory,
-#disk,
-#tray {
-background: #1e1e2e;
-opacity: 1.0;
-padding: 1.5px 7px 1.5px 7px;
-margin-top: 5px;
-margin-bottom: 5px;
-border-radius: 13px;
-margin-right: 5px;
-margin-left: 5px;
-}
-
-#workspaces {
-background: #1e1e2e;
-border-radius: 13px;
-margin-left: 5px;
-padding-right: 0px;
-}
-
-#window {
-border-radius: 7px;
-margin-left: 60px;
-margin-right: 60px;
-}
-
-#clock {
-color: #a6e3a1;
-border-radius: 0px 13px 13px 0px;
-margin-right: 0px;
-margin-left: 0px;
-}
-
-#network {
-color: #f9e2af;
-border-radius: 7px 7px 7px 7px;
-margin-right: 5px;
-}
-
-#custom-notifications {
-color: #f9e2af;
-border-radius: 7px 7px 7px 7px;
-padding-left: 9px;
-padding-right: 15px;
-margin-left:  2px;
-margin-right: 2px;
-
-}
-
-#custom-updates {
-color: #89b4fa;
-border-radius: 7px 7px 7px 7px;
-border-left:  0px;
-border-right: 0px;
-margin-left:  2px;
-margin-right: 2px;
-}
-
-#custom-player {
-color: #cba6f7;
-border-radius: 7px 7px 7px 7px;
-padding-left: 4px;
-margin-left:  5px;
-margin-right: 5px;
-}
-
-#memory {
-color: #89b4fa;
-border-radius: 0px 0px 0px 0px;
-margin-left: 0px;
-margin-right:0px;
-}
-
 #disk {
-color: #f9e2af;
-border-radius: 0px 13px 13px 0px;
-margin-left: 0px;
-}
-
-
-#bluetooth {
-color: #89b4fa;
-border-radius: 0px 13px 13px 0px;
-margin-left: 5px;
-margin-right: 5px;
-}
-
-#pulseaudio {
-color: #89b4fa;
-border-radius: 0px 0px 0px 0px;
-margin-right: 0px;
-margin-left: 0px;
-}
-
-#pulseaudio.microphone {
-color: #cba6f7;
-border-radius: 0px 0px 0px 0px;
-margin-left: 0px;
-margin-right: 0px;
-}
-
-#language {
-border-radius: 13px 0px 0px 13px;
-margin-right:0px;
-}
-
-#cpu {
-border-radius: 13px 0px 0px 13px;
-padding-left:10px;
-margin-right:0px;
-margin-left: 0px;
+background: #0c0c0e;
+color: #f4f4f4;
+padding: 4px 8px;
+margin: 0;
+border-radius: 0;
+margin-left: 3px;
 }
 
 #custom-weather {
-border-radius: 13px 13px 13px 13px;
-margin-right: 0px
+border-top-left-radius: 10px;
+border-bottom-left-radius: 10px;
+}
 
+#disk {
+border-top-right-radius: 10px;
+border-bottom-right-radius: 10px;
+margin-right: 0;
+}
+
+/* Spacer zur Mitte */
+#custom-spacer-left {
+padding: 0 12px;
+background: transparent;
+}
+
+/* ---------- MITTE ---------- */
+#workspaces {
+background: #0c0c0e;
+padding: 4px 8px;
+border-radius: 10px;
+margin: 0;
+}
+
+#workspaces button {
+color: #737373;
+padding: 0 6px;
+}
+
+#workspaces button.active {
+color: #f97316;
+font-weight: bold;
+}
+
+#workspaces button.focused {
+background: #3b82f6;
+color: #0c0c0e;
+}
+
+#workspaces button.urgent {
+color: #ef4444;
+}
+
+/* Spacer zur rechten Seite */
+#custom-spacer-right {
+padding: 0 12px;
+background: transparent;
+}
+
+/* ---------- RECHTS ---------- */
+#language,
+#pulseaudio,
+#pulseaudio.microphone,
+#battery,
+#clock,
+#tray {
+background: #0c0c0e;
+color: #f4f4f4;
+padding: 4px 8px;
+margin: 0;
+border-radius: 0;
+margin-right: 3px;
+}
+
+#language {
+border-top-left-radius: 10px;
+border-bottom-left-radius: 10px;
+}
+
+#tray {
+border-top-right-radius: 10px;
+border-bottom-right-radius: 10px;
+margin-right: 0;
+}
+
+/* ---------- FARBEN PRO MODUL ---------- */
+#cpu {
+color: #f97316;
+}
+
+#memory {
+color: #3b82f6;
+}
+
+#disk {
+color: #facc15;
+}
+
+#pulseaudio,
+#pulseaudio.microphone {
+color: #10b981;
+}
+
+#battery {
+color: #10b981;
+}
+
+#clock {
+color: #f97316;
 }

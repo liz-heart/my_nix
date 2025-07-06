@@ -45,6 +45,7 @@ in
 
   nix.settings.experimental-features = [ "nix-command" "flakes" ];
   nixpkgs.config.allowUnfree = true;
+  services.upower.enable = true;
 
   system.stateVersion = "25.05";
 }
