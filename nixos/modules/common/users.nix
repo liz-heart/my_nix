@@ -14,6 +14,5 @@
     description = "lizheart";
     extraGroups = [ "networkmanager" ];
     hashedPasswordFile = "${./secrets/lizheart-password.hash}";
-
   };
 }
