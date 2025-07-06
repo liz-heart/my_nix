@@ -13,6 +13,7 @@
     isNormalUser = true;
     description = "lizheart";
     extraGroups = [ "networkmanager" ];
-    hashedPasswordFile = ./secrets/lizheart-password.hash;
+    hashedPasswordFile = "${./secrets/lizheart-password.hash}";
+
   };
 }
