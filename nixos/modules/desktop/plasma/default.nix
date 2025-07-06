@@ -1,25 +1,25 @@
 { config, pkgs, ... }:
 
 {
-  # X11 aktivieren
+  # Enable X11
   services.xserver.enable = true;
 
-  # SDDM als Display-Manager
+  # Use SDDM as display manager
   services.displayManager.sddm.enable = true;
 
-  # KDE Plasma 6 Desktop
+  # Enable KDE Plasma 6 desktop
   services.desktopManager.plasma6.enable = true;
 
-  # Tastatur-Layout (AT, nodeadkeys)
+  # Keyboard layout: Austrian with nodeadkeys
   services.xserver.xkb = {
     layout = "at";
     variant = "nodeadkeys";
   };
 
-  # Drucken via CUPS
+  # Enable CUPS printing
   services.printing.enable = true;
 
-  # Audio via PipeWire
+  # PipeWire audio setup
   services.pulseaudio.enable = false;
   security.rtkit.enable = true;
   services.pipewire = {
@@ -27,13 +27,12 @@
     alsa.enable = true;
     alsa.support32Bit = true;
     pulse.enable = true;
-    # Optional: JACK<<
-    # jack.enable = true;
+    # jack.enable = true; # optional
   };
 
-  # Steam aktivieren
+  # Enable Steam gaming support
   programs.steam.enable = true;
 
-  # Optional: Touchpad aktivieren (falls nötig)
+  # Optional: Touchpad support (libinput)
   # services.xserver.libinput.enable = true;
 }

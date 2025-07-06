@@ -110,6 +110,12 @@ in {
   programs.zsh.enable = true;
   programs.bottom.enable = true;
 
+  programs.zsh.shellAliases = {
+  ll = "ls -la";
+  gs = "git status";
+};
+
+
   # Startskript für Hyprland
   home.file.".config/hypr/start.sh" = {
     text = ''

@@ -1,8 +1,7 @@
 # nixos/modules/common/users.nix
 { config, pkgs, ... }:
-# Systemnutzer
-{
 
+{
   users.users.dominik = {
     isNormalUser = true;
     description = "dominik";
@@ -13,6 +12,6 @@
     isNormalUser = true;
     description = "lizheart";
     extraGroups = [ "networkmanager" ];
-    hashedPasswordFile = "${./secrets/lizheart-password.hash}";
+    hashedPasswordFile = toString ./secrets/lizheart-password.hash;
   };
 }

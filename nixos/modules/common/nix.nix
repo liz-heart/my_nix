@@ -1,99 +1,81 @@
 # nixos/modules/common/nix.nix
-{ config, pkgs, ... }:
+{ config, pkgs, lib, ... }:
 
 {
-  # Aktiviert die neuen Nix-Funktionen: Flakes & nix-command
+  # Enable modern Nix features: flakes & nix-command
   nix.settings.experimental-features = [ "nix-command" "flakes" ];
 
-  # Globale Systempakete für alle Hosts verfügbar machen
-    fonts.packages = with pkgs; [
+  # Global fonts available to all users
+  fonts.packages = with pkgs; [
     nerd-fonts.jetbrains-mono
     nerd-fonts.fira-code
     nerd-fonts.hack
   ];
 
+  # Global system packages available to all users
   environment.systemPackages = with pkgs; [
+    # Core utilities
+    gparted unzip vim curl wget file
 
-    # System-Tools
-    gparted                    # Partitionierung & Festplattenverwaltung
-    unzip                      # Entpacken von .zip-Dateien
-    vim                        # Terminal-basierter Texteditor
-    curl                       # HTTP-Client
-    wget                       # Alternativer HTTP-Download-Client
-    file                       # Dateityp-Erkennung per CLI
+    # Office & note-taking
+    libreoffice obsidian
 
-    # Textverarbeitung & Notizen
-    libreoffice                # Office-Suite
-    obsidian                   # Markdown-Notizen und Wissensdatenbank
+    # CLI tools & shell
+    zsh dunst neofetch btop ddgr wl-clipboard clipman grim slurp
 
-    # Terminal & CLI-Tools
-    zsh                        # Alternativer Shell
-    dunst                      # Notification-Daemon
-    neofetch                   # Systeminfo im Terminal anzeigen
-    btop                       # Systemmonitor im Terminal (CPU, RAM, Prozesse)
-    ddgr                       # DuckDuckGo über die CLI nutzen
-    wl-clipboard               # Zwischenablage für Wayland
-    clipman                    # Clipboard-Manager
-    grim                       # Screenshot-Tool für Wayland
-    slurp                      # Auswahlrechteck für Screenshots mit grim
+    # Wayland tools
+    swww waybar networkmanagerapplet polkit_gnome swaylock
 
-    # Wayland GUI-Tools
-    swww                       # Wallpaper-Manager für Wayland
-    waybar                     # Statusleiste für Wayland (Hyprland, Sway)
-    networkmanagerapplet       # GUI für Netzwerkeinstellungen
-    polkit_gnome               # PolicyKit Agent für Authentifizierungen
-    swaylock                   # Bildschirmsperre für Wayland
+    # KDE/Qt applications and integration
+    kdePackages.kservice
+    kdePackages.kde-cli-tools
+    kdePackages.dolphin
+    kdePackages.kate
+    kdePackages.okular
+    kdePackages.gwenview
+    kdePackages.kscreen
+    kdePackages.plasma-systemmonitor
+    kdePackages.kio
+    kdePackages.kio-fuse
+    kdePackages.kio-extras
+    kdePackages.kio-admin
+    kdePackages.qtwayland
+    kdePackages.kdegraphics-thumbnailers
+    kdePackages.breeze-icons
+    kdePackages.qtsvg
+    kdePackages.plasma-integration
+    kdePackages.plasma-workspace
+    shared-mime-info
+    desktop-file-utils
 
-    # KDE-Komponenten (für Dolphin & Co. wichtig, auch unter Hyprland)
-    kdePackages.kservice                         # KDE Service-Infrastruktur (wichtig für kbuildsycoca6)
-    kdePackages.kde-cli-tools                    # Enthält Tools wie kbuildsycoca6
-    kdePackages.dolphin                          # KDE-Dateimanager
-    kdePackages.kate                             # KDE Texteditor
-    kdePackages.okular                           # PDF-Viewer
-    kdePackages.gwenview                         # Bildbetrachter
-    kdePackages.kscreen                          # Bildschirm-Einstellungen
-    kdePackages.plasma-systemmonitor             # Systemmonitor mit GUI
-    kdePackages.kio                              # Datei-IO-Backend
-    kdePackages.kio-fuse                         # KIO über FUSE (z. B. Netzwerkzugriffe)
-    kdePackages.kio-extras                       # Zusätzliche Protokolle wie smb://
-    kdePackages.kio-admin                        # Root-Rechte für Dateiaktionen
-    kdePackages.qtwayland                        # Wayland-Support für Qt/KDE-Apps
-    kdePackages.kdegraphics-thumbnailers         # Vorschaugeneratoren (z. B. für Bilder)
-    kdePackages.breeze-icons                     # KDE Icon-Theme
-    kdePackages.qtsvg                            # SVG-Support für Icons
-    kdePackages.plasma-integration               # KDE-Integration für Qt-Anwendungen
-    kdePackages.plasma-workspace                 # Enthält plasma-applications.menu (essentiell für Dolphin)
-    shared-mime-info                             # Datenbank für MIME-Typen
-    desktop-file-utils                           # Tools zum Verwalten von .desktop-Dateien
+    # Development tools
+    vscode
+    android-studio
+    jetbrains.idea-community-bin
+    gitFull
 
-    # Entwicklung
-    vscode                       # Visual Studio Code
-    android-studio               # Android-IDE
-    jetbrains.idea-community-bin # IntelliJ IDEA Community Edition
-    gitFull                      # Vollständige Git-Installation
+    # Communication / multimedia
+    vesktop
 
-    # Kommunikation / Multimedia
-    vesktop                      # Discord-Client (basierend auf Vencord)
-
-    # Eigene Skripte
-    (pkgs.writeShellScriptBin "screenshot" ''
+    # Custom screenshot script
+    (writeShellScriptBin "screenshot" ''
       #!/usr/bin/env bash
       FILE="/tmp/screenshot.png"
       grim -g "$(slurp)" "$FILE" &&
-        cp "$FILE" ~/Bilder/Bildschirmfotos/screenshot-$(date +%s).png
+        cp "$FILE" ~/Pictures/Screenshots/screenshot-$(date +%s).png
     '')
   ];
 
-  # GPU-Treiber für hybrides Setup (Intel + AMD GPU)
+  # Enable hybrid GPU drivers (Intel + AMD)
   services.xserver.videoDrivers = [ "amdgpu" "intel" ];
 
-  # Zeitzone
+  # Set system timezone
   time.timeZone = "Europe/Vienna";
 
-  # vim als Standard-Editor
+  # Set vim as the default editor
   programs.vim.defaultEditor = true;
 
-  # Firefox mit vorkonfiguriertem Datenschutz
+  # Firefox with privacy-friendly policies
   programs.firefox = {
     enable = true;
     policies = {
@@ -101,22 +83,18 @@
         URL = "https://duckduckgo.com";
         StartPage = "homepage";
       };
-      SearchEngines = {
-        Default = "DuckDuckGo";
-      };
-      Extensions = {
-        Install = [
-          "https://addons.mozilla.org/firefox/downloads/latest/ublock-origin/latest.xpi"
-          "https://addons.mozilla.org/firefox/downloads/latest/duckduckgo-privacy-essentials/latest.xpi"
-        ];
-      };
+      SearchEngines.Default = "DuckDuckGo";
+      Extensions.Install = [
+        "https://addons.mozilla.org/firefox/downloads/latest/ublock-origin/latest.xpi"
+        "https://addons.mozilla.org/firefox/downloads/latest/duckduckgo-privacy-essentials/latest.xpi"
+      ];
     };
   };
 
-  # XDG-Integration: sorgt dafür, dass Dolphin und KDE-Apps MIME-Types und .desktop-Dateien erkennen
-  xdg.menus.enable = true;                   # Aktiviert Menüstruktur wie applications.menu
-  xdg.mime.enable = true;                    # Aktiviert MIME-Typ-Zuordnung
-  xdg.portal.enable = true;                  # Ermöglicht Portalintegration (z. B. Datei-Dialoge)
+  # XDG portal integration (important for KDE/Wayland apps)
+  xdg.menus.enable = true;
+  xdg.mime.enable = true;
+  xdg.portal.enable = true;
   xdg.portal.extraPortals = [ pkgs.xdg-desktop-portal-gtk ];
-  xdg.portal.config.common.default = "gtk"; # GTK als Standard-Backend
+  xdg.portal.config.common.default = lib.mkForce "xdg-desktop-portal-hyprland";
 }
