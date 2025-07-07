@@ -64,7 +64,10 @@
           if [ ! -d node_modules/@angular/cli ]; then
             yarn add --dev @angular/cli@20
           fi
-          echo "💡 To create a new project: npx ng new my-app"
+          echo "
+          Did u use: 'nix develop ~/my_nix#angular --impure' iff yes ->
+          💡 To create a new project: npx ng new my-app --directory=/home/dominik/dev/my_app"
+"
         '';
       };
 
