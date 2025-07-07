@@ -1,7 +1,7 @@
 { pkgs, ... }:
 
 let
-  customBottom = import ./bottom.nix { inherit pkgs; };
+  # customBottom = import ./bottom.nix { inherit pkgs; };
 in {
   home.packages = [ customBottom ];
 
