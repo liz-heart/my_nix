@@ -1,6 +1,10 @@
 # nixos/modules/common/nix.nix
-{ config, pkgs, lib, ... }:
+{ config, pkgs, lib, obsidian, ... }:
 
+let
+  # Eigene Obsidian-AppImage-Version mit Git-Fix
+  obsidian = pkgs.callPackage ../../packages/obsidian.nix {};
+in
 {
   # Enable modern Nix features: flakes & nix-command
   nix.settings.experimental-features = [ "nix-command" "flakes" ];
