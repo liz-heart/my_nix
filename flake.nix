@@ -116,8 +116,6 @@
         extraSpecialArgs = {
           inherit hyprland;
           desktopEnvironment = "hyprland";
-
-          obsidian = pkgs.callPackage ./nixos/packages/obsidian.nix {};
         };
       };
 
