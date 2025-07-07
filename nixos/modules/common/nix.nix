@@ -21,7 +21,7 @@
     libreoffice obsidian
 
     # CLI tools & shell
-    zsh dunst neofetch btop ddgr wl-clipboard clipman grim slurp
+    zsh dunst fastfetch btop ddgr wl-clipboard clipman grim slurp
 
     # Wayland tools
     swww waybar networkmanagerapplet polkit_gnome swaylock

@@ -52,30 +52,42 @@
 
       devShells.angular = pkgs.mkShell {
         name = "angular-shell";
+
+        # Node.js in einer passenden Version für Angular v20 (mind. Node 18 empfohlen)
         buildInputs = [
-          pkgs.nodejs
+          pkgs.nodejs_20  # Angular v20 unterstützt Node.js 18–20
           pkgs.yarn
-          pkgs.git
         ];
         shellHook = ''
           echo "🅰️ Angular DevShell active"
-          echo "💡 npx @angular/cli new my-app"
+          echo "📦 Installing Angular CLI v20 (locally)"
+          if [ ! -d node_modules/@angular/cli ]; then
+            yarn add --dev @angular/cli@20
+          fi
+          echo "💡 To create a new project: npx ng new my-app"
         '';
       };
 
+
       devShells.java = pkgs.mkShell {
-        name = "java-shell";
-        buildInputs = [
-          pkgs.jdk21
-          pkgs.maven
-          pkgs.gradle
-        ];
-        shellHook = ''
-          echo "☕ Java DevShell active"
-          java -version
-        '';
-        JAVA_HOME = "${pkgs.jdk21}";
-      };
+      name = "java-shell";
+
+      buildInputs = [
+        pkgs.jdk21
+        pkgs.maven
+        pkgs.gradle
+        pkgs.kotlin  # Kotlin-Compiler hinzufügen
+      ];
+
+      shellHook = ''
+        echo "☕ Java + Kotlin DevShell active"
+        java -version
+        kotlinc -version
+      '';
+
+      JAVA_HOME = "${pkgs.jdk21}";
+    };
+
 
       # Formatter for Nix code
       formatter = pkgs.nixpkgs-fmt;

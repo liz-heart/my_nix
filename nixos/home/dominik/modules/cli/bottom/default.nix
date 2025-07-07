@@ -3,7 +3,7 @@
 let
   # customBottom = import ./bottom.nix { inherit pkgs; };
 in {
-  home.packages = [ customBottom ];
+ # home.packages = [ customBottom ];
 
   xdg.configFile."bottom/bottom.toml".text = ''
     [colors]

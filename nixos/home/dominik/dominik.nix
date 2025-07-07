@@ -18,7 +18,7 @@ in {
   imports = [
     ./modules/startup
     ./modules/waybar
-    ./modules/cli/bottom/default.nix
+    ./modules/cli/bottom
     #./modules/apps.nix
   ];
 
